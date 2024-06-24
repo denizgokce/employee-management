@@ -1,0 +1,560 @@
+{
+	"info": {
+		"_postman_id": "865b95a5-3959-40a3-860b-f62d3a1d3a4a",
+		"name": "employee-management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1487286"
+	},
+	"item": [
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "get-users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query { users { id username email } }\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3015/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3015",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetUser($id: String!) {\n  user(id: $id) {\n        id\n        username \n        email\n  }\n}\n\n",
+								"variables": "{\n    \"id\": \"{{new_user_id}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3015/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3015",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"new_user_id\", JSON.parse(responseBody).data.createUser.id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateUser($username: String!, $password: String!, $email: String!, $role: Float!) {\n  createUser(username: $username, password: $password, email: $email, role: $role) {\n    id\n    username\n    email\n    role\n  }\n}",
+								"variables": "{\n    \"username\": \"johndoe\",\n    \"email\": \"johndoe@acme.com\",\n    \"password\": \"Test1234?\",\n    \"role\": 0\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3015/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3015",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation UpdateUser($id: String!, $username: String!, $email: String!, $role: Float!) {\n  updateUser(id: $id, username: $username, email: $email, role: $role) {\n    id\n    username\n    email\n    role\n  }\n}",
+								"variables": "{\n    \"id\": \"{{new_user_id}}\",\n    \"username\": \"johndoe\",\n    \"email\": \"johndoe@acme.com\",\n    \"role\": 1\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3015/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3015",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation DeleteUser($id: String!) {\n  deleteUser(id: $id)\n}",
+								"variables": "{\n    \"id\": \"{{new_user_id}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3015/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3015",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "employee",
+			"item": [
+				{
+					"name": "get-employees",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query { \n    employees { \n        id\n        name\n        email\n        jobTitle\n        department\n        created\n        updated\n    } \n}\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3015/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3015",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-employee",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetEmployee($id: String!) {\n  employee(id: $id) {\n    id\n    name\n    email\n    jobTitle\n    department\n    created\n    updated\n  }\n}",
+								"variables": "{\n    \"id\": \"{{new_employee_id}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3015/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3015",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"new_employee_id\", JSON.parse(responseBody).data.createEmployee.id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateEmployee($name: String!, $email: String!, $jobTitle: String!, $department: String!) {\n  createEmployee(name: $name, email: $email, jobTitle: $jobTitle, department: $department) {\n    id\n    name\n    email\n    jobTitle\n    department\n  }\n}",
+								"variables": "{\n    \"name\": \"Deniz Gokce\",\n    \"email\": \"denizgokce93@gmail.com\",\n    \"jobTitle\": \"Software Developer\",\n    \"department\": \"IT\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3015/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3015",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation UpdateEmployee($id: String!, $name: String!, $email: String!, $jobTitle: String!, $department: String!) {\n  updateEmployee(id: $id, name: $name, email: $email, jobTitle: $jobTitle, department: $department) {\n    id\n    name\n    email\n    jobTitle\n    department\n  }\n}",
+								"variables": "{\n    \"id\": \"{{new_employee_id}}\",\n    \"name\": \"John Doe\",\n    \"email\": \"denizgokce93@gmail.com\",\n    \"jobTitle\": \"Janitor\",\n    \"department\": \"IT\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3015/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3015",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-employee",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation DeleteEmployee($id: String!) {\n  deleteEmployee(id: $id)\n}",
+								"variables": "{\n    \"id\": \"{{new_employee_id}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3015/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3015",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// console.log(JSON.parse(responseBody).data.login.access_token)§",
+									"pm.collectionVariables.set(\"access_token\", JSON.parse(responseBody).data.login.access_token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Login($username: String!, $password: String!) {\n  login(username: $username, password: $password) {\n    access_token\n    refresh_token\n    username\n    email\n    role\n  }\n}",
+								"variables": "{\n    \"username\": \"admin\",\n    \"password\": \"Test1234?\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3015/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3015",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login-employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// console.log(JSON.parse(responseBody).data.login.access_token)§",
+									"pm.collectionVariables.set(\"access_token\", JSON.parse(responseBody).data.login.access_token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Login($username: String!, $password: String!) {\n  login(username: $username, password: $password) {\n    access_token\n    refresh_token\n    username\n    email\n    role\n  }\n}",
+								"variables": "{\n    \"username\": \"employee\",\n    \"password\": \"Test1234?\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3015/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3015",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiNDQzNGI0Mi0xNzcyLTRmMmMtYjJhYS05M2JlOTlkN2ZhMWUiLCJ1c2VybmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBhZG1pbi5jb20iLCJyb2xlIjowLCJpYXQiOjE3MTkxNjI2NjZ9.F74H_DAV4FuvYHr-quHiMWz2K3-YN9IkmY8DXJ2dP4k",
+			"type": "string"
+		},
+		{
+			"key": "new_user_id",
+			"value": ""
+		},
+		{
+			"key": "new_employee_id",
+			"value": ""
+		}
+	]
+}
