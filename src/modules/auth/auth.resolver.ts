@@ -1,12 +1,12 @@
-/**
- * Resolver for handling authentication-related GraphQL mutations.
- */
 import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { AuthPayload } from './auth.payload';
+import { Logger } from '@nestjs/common';
 
 @Resolver()
 export class AuthResolver {
+  private readonly logger = new Logger(AuthResolver.name);
+
   constructor(private readonly authService: AuthService) {}
 
   /**
@@ -20,6 +20,9 @@ export class AuthResolver {
     @Args('username') username: string,
     @Args('password') password: string,
   ): Promise<AuthPayload> {
-    return this.authService.login(username, password);
+    this.logger.log(`Login attempt for username: ${username}`);
+    const authPayload = await this.authService.login(username, password);
+    this.logger.log(`Login successful for username: ${username}`);
+    return authPayload;
   }
 }

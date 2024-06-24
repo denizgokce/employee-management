@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -7,6 +7,8 @@ import { UserRoleEnum } from '../auth/user-role.enum';
 
 @Injectable()
 export class UserSeederService {
+  private readonly logger = new Logger(UserSeederService.name);
+
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -16,6 +18,8 @@ export class UserSeederService {
    * Seeds initial users into the database if they do not already exist.
    */
   async seed() {
+    this.logger.log('Seeding initial users...');
+
     const users: User[] = [
       new User({
         username: 'admin',
@@ -54,8 +58,21 @@ export class UserSeederService {
         where: { email: user.email },
       });
       if (!existingUser) {
-        await this.userRepository.save(user);
+        try {
+          await this.userRepository.save(user);
+          this.logger.log(`Created user ${user.username} (${user.email})`);
+        } catch (error) {
+          this.logger.error(
+            `Failed to create user ${user.username} (${user.email}): ${error.message}`,
+          );
+        }
+      } else {
+        this.logger.warn(
+          `User ${user.username} (${user.email}) already exists`,
+        );
       }
     }
+
+    this.logger.log('User seeding completed.');
   }
 }

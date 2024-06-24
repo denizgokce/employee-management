@@ -71,7 +71,9 @@ export class EmailService {
    * @returns Promise<Job> - The Bull job object representing the task in the queue.
    */
   async sendWelcomeEmail(email: string): Promise<Job> {
+    this.logger.log(`Adding job to send welcome email to ${email}`);
     const job = await this.emailQueue.add('sendWelcomeEmail', { email });
+    this.logger.log(`Job ${job.id} added to the queue for ${email}`);
     return job;
   }
 
@@ -82,13 +84,24 @@ export class EmailService {
    */
   async processEmail(job: Job) {
     const { email } = job.data;
-    await this.mailerService.sendMail({
-      to: email,
-      subject: 'Welcome to the Company!',
-      template: './welcome',
-      context: {
-        email,
-      },
-    });
+    this.logger.log(`Processing email job ${job.id} for ${email}`);
+    try {
+      await this.mailerService.sendMail({
+        to: email,
+        subject: 'Welcome to the Company!',
+        template: './welcome',
+        context: {
+          email,
+        },
+      });
+      this.logger.log(
+        `Email job ${job.id} processed successfully for ${email}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to process email job ${job.id} for ${email}`,
+        error.stack,
+      );
+    }
   }
 }

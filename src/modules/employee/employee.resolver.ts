@@ -1,13 +1,15 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { EmployeeService } from './employee.service';
 import { Employee } from './employee.entity';
-import { ConflictException, UseGuards } from '@nestjs/common';
+import { ConflictException, Logger, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import * as _ from 'lodash';
 
 @UseGuards(JwtAuthGuard)
 @Resolver(() => Employee)
 export class EmployeeResolver {
+  private readonly logger = new Logger(EmployeeResolver.name);
+
   constructor(private readonly employeeService: EmployeeService) {}
 
   /**
@@ -17,6 +19,7 @@ export class EmployeeResolver {
    */
   @Query(() => [Employee])
   async employees(): Promise<Employee[]> {
+    this.logger.log('Fetching all employees');
     return this.employeeService.findAll();
   }
 
@@ -30,6 +33,7 @@ export class EmployeeResolver {
   async employee(
     @Args('id', { type: () => String }) id: string,
   ): Promise<Employee> {
+    this.logger.log(`Fetching employee with ID: ${id}`);
     return this.employeeService.findOne(id);
   }
 
@@ -50,11 +54,14 @@ export class EmployeeResolver {
     @Args('jobTitle') jobTitle: string,
     @Args('department') department: string,
   ): Promise<Employee> {
+    this.logger.log(`Creating employee with email: ${email}`);
     const existingEmployees = await this.employeeService.query({ email });
     if (existingEmployees.length > 0) {
+      this.logger.warn(`Employee with email ${email} already exists`);
       throw new ConflictException('Employee with this email already exists');
     }
     const employee = new Employee({ name, email, jobTitle, department });
+    this.logger.log(`Employee created with email: ${email}`);
     return this.employeeService.create(employee);
   }
 
@@ -77,14 +84,17 @@ export class EmployeeResolver {
     @Args('jobTitle') jobTitle: string,
     @Args('department') department: string,
   ): Promise<Employee> {
+    this.logger.log(`Updating employee with ID: ${id}`);
     const employee = await this.employeeService.findOne(id);
     if (_.isNil(employee)) {
+      this.logger.warn(`Employee with ID ${id} does not exist`);
       throw new ConflictException('Employee does not exist');
     }
     if (name) employee.name = name;
     if (email) employee.email = email;
     if (jobTitle) employee.jobTitle = jobTitle;
     if (department) employee.department = department;
+    this.logger.log(`Employee with ID ${id} updated`);
     return this.employeeService.update(id, employee);
   }
 
@@ -97,11 +107,14 @@ export class EmployeeResolver {
    */
   @Mutation(() => Boolean)
   async deleteEmployee(@Args('id') id: string): Promise<boolean> {
+    this.logger.log(`Deleting employee with ID: ${id}`);
     const existingEmployee = await this.employeeService.findOne(id);
     if (_.isNil(existingEmployee)) {
+      this.logger.warn(`Employee with ID ${id} does not exist`);
       throw new ConflictException('Employee does not exist');
     }
     await this.employeeService.delete(id);
+    this.logger.log(`Employee with ID ${id} deleted`);
     return true;
   }
 }

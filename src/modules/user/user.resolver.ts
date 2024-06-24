@@ -1,13 +1,14 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { User } from './user.entity';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, ConflictException, Logger } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ConflictException } from '@nestjs/common';
 import { UserService } from './user.sevice';
 
 @UseGuards(JwtAuthGuard) // Protects all resolver methods with JwtAuthGuard
 @Resolver(() => User)
 export class UserResolver {
+  private readonly logger = new Logger(UserResolver.name);
+
   constructor(private readonly userService: UserService) {}
 
   /**
@@ -16,6 +17,7 @@ export class UserResolver {
    */
   @Query(() => [User])
   async users(): Promise<User[]> {
+    this.logger.log('Fetching all users');
     return this.userService.findAll();
   }
 
@@ -26,6 +28,7 @@ export class UserResolver {
    */
   @Query(() => User)
   async user(@Args('id', { type: () => String }) id: string): Promise<User> {
+    this.logger.log(`Fetching user with ID: ${id}`);
     return this.userService.findOne(id);
   }
 
@@ -45,13 +48,17 @@ export class UserResolver {
     @Args('password') password: string,
     @Args('role') role: number,
   ): Promise<User> {
+    this.logger.log(`Creating user with username: ${username}`);
     const existingUser = await this.userService.findByName(username);
     if (existingUser) {
+      this.logger.warn(`User with username ${username} already exists`);
       throw new ConflictException('User with this username already exists');
     }
 
     const user = new User({ username, email, password, role });
-    return this.userService.create(user);
+    const createdUser = await this.userService.create(user);
+    this.logger.log(`User created with ID: ${createdUser.id}`);
+    return createdUser;
   }
 
   /**
@@ -70,8 +77,10 @@ export class UserResolver {
     @Args('email') email: string,
     @Args('role') role: number,
   ): Promise<User> {
+    this.logger.log(`Updating user with ID: ${id}`);
     const user = await this.userService.findOne(id);
     if (!user) {
+      this.logger.warn(`User with ID ${id} does not exist`);
       throw new ConflictException('User does not exist');
     }
 
@@ -79,7 +88,9 @@ export class UserResolver {
     if (email) user.email = email;
     if (role) user.role = role;
 
-    return this.userService.update(id, user);
+    const updatedUser = await this.userService.update(id, user);
+    this.logger.log(`User with ID: ${id} updated successfully`);
+    return updatedUser;
   }
 
   /**
@@ -90,12 +101,15 @@ export class UserResolver {
    */
   @Mutation(() => Boolean)
   async deleteUser(@Args('id') id: string): Promise<boolean> {
+    this.logger.log(`Deleting user with ID: ${id}`);
     const user = await this.userService.findOne(id);
     if (!user) {
+      this.logger.warn(`User with ID ${id} does not exist`);
       throw new ConflictException('User does not exist');
     }
 
     await this.userService.delete(id);
+    this.logger.log(`User with ID: ${id} deleted successfully`);
     return true;
   }
 }
