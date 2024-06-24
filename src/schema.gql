@@ -1,0 +1,53 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Employee {
+  id: ID!
+  name: String!
+  email: String!
+  jobTitle: String!
+  department: String!
+  created: DateTime!
+  updated: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type User {
+  id: ID!
+  username: String!
+  email: String!
+  password: String!
+  role: Float!
+  created: DateTime!
+  updated: DateTime!
+}
+
+type AuthPayload {
+  access_token: String!
+  refresh_token: String!
+  username: String!
+  email: String!
+  role: Float!
+}
+
+type Query {
+  employees: [Employee!]!
+  employee(id: String!): Employee!
+  users: [User!]!
+  user(id: String!): User!
+}
+
+type Mutation {
+  createEmployee(name: String!, email: String!, jobTitle: String!, department: String!): Employee!
+  updateEmployee(id: String!, name: String!, email: String!, jobTitle: String!, department: String!): Employee!
+  deleteEmployee(id: String!): Boolean!
+  login(username: String!, password: String!): AuthPayload!
+  createUser(username: String!, email: String!, password: String!, role: Float!): User!
+  updateUser(id: String!, username: String!, email: String!, role: Float!): User!
+  deleteUser(id: String!): Boolean!
+}
