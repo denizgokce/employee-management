@@ -1,7 +1,10 @@
 import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { AuthPayload } from './auth.payload';
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
+import { UserRoleEnum } from './user-role.enum';
+import { Roles } from './role.decorator';
+import { RolesGuard } from './guards/role.guard';
 
 @Resolver()
 export class AuthResolver {
@@ -24,5 +27,12 @@ export class AuthResolver {
     const authPayload = await this.authService.login(username, password);
     this.logger.log(`Login successful for username: ${username}`);
     return authPayload;
+  }
+
+  @Roles(UserRoleEnum.Employee)
+  @UseGuards(RolesGuard)
+  @Mutation(() => String)
+  async test(): Promise<string> {
+    return 'test';
   }
 }
