@@ -13,9 +13,9 @@ export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
   constructor(
-    private nestJwtService: NestJwtService,
-    private usersService: UserService,
-    private configService: ConfigService,
+    private readonly nestJwtService: NestJwtService,
+    private readonly usersService: UserService,
+    private readonly configService: ConfigService,
   ) {}
 
   /**

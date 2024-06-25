@@ -13,8 +13,8 @@ export class EmployeeService implements IWrite<Employee>, IRead<Employee> {
 
   constructor(
     @InjectRepository(Employee)
-    private employeesRepository: Repository<Employee>,
-    private emailService: EmailService,
+    private readonly employeesRepository: Repository<Employee>,
+    private readonly emailService: EmailService,
   ) {}
 
   /**

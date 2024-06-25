@@ -47,6 +47,7 @@ type Mutation {
   updateEmployee(id: String!, name: String!, email: String!, jobTitle: String!, department: String!): Employee!
   deleteEmployee(id: String!): Boolean!
   login(username: String!, password: String!): AuthPayload!
+  test: String!
   createUser(username: String!, email: String!, password: String!, role: Float!): User!
   updateUser(id: String!, username: String!, email: String!, role: Float!): User!
   deleteUser(id: String!): Boolean!

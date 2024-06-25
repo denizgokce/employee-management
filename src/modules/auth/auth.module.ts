@@ -6,7 +6,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { UserModule } from '../user/user.module';
-import { PassportModule } from '@nestjs/passport'; // Import JwtAuthGuard
+import { PassportModule } from '@nestjs/passport';
+import { RolesGuard } from './guards/role.guard'; // Import JwtAuthGuard
 
 /**
  * Module for handling authentication using JWT tokens.
@@ -46,7 +47,7 @@ import { PassportModule } from '@nestjs/passport'; // Import JwtAuthGuard
     }),
     UserModule, // Ensure UserModule is imported if needed
   ],
-  providers: [AuthService, AuthResolver, JwtStrategy, JwtAuthGuard],
-  exports: [AuthService, JwtAuthGuard],
+  providers: [AuthService, AuthResolver, JwtStrategy, JwtAuthGuard, RolesGuard],
+  exports: [AuthService, JwtAuthGuard, RolesGuard],
 })
 export class AuthModule {}
